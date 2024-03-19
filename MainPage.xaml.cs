@@ -1,25 +1,40 @@
-﻿namespace TimeTrack
-{
-    public partial class MainPage : ContentPage
-    {
-        int count = 0;
+﻿using System;
+using Microsoft.Maui.Controls;
 
-        public MainPage()
+namespace TimeTrack
+{
+    public partial class LoginPage : ContentPage
+    {
+        public LoginPage()
         {
             InitializeComponent();
         }
 
-        private void OnCounterClicked(object sender, EventArgs e)
+        private async void OnLoginClicked(object sender, EventArgs e)
         {
-            count++;
+            string username = UsernameEntry.Text;
+            string password = PasswordEntry.Text;
 
-            if (count == 1)
-                CounterBtn.Text = $"Clicked {count} time";
+            DataServiceSQL dataService = new DataServiceSQL();
+            bool isValidUser = dataService.AuthenticateUser(username, password);
+
+            if (isValidUser)
+            {
+                // Si l'utilisateur est authentifié, naviguez vers la page principale ou le tableau de bord.
+                await Navigation.PushAsync(new DashboardPage());
+            }
             else
-                CounterBtn.Text = $"Clicked {count} times";
+            {
+                // Afficher un message d'erreur.
+                await DisplayAlert("Erreur", "Nom d'utilisateur ou mot de passe incorrect.", "OK");
+            }
+        }
 
-            SemanticScreenReader.Announce(CounterBtn.Text);
+        private Task<bool> AuthenticateUser(string username, string password)
+        {
+            // Logique pour authentifier l'utilisateur avec la base de données.
+            // Cette méthode devrait interroger la base de données et retourner un booléen.
+            throw new NotImplementedException();
         }
     }
-
 }
