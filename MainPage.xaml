@@ -15,7 +15,7 @@
             <!-- Champ pour le nom d'utilisateur ou email -->
             <Entry
                 x:Name="UsernameEntry"
-                Placeholder="Nom d'utilisateur ou email"
+                Placeholder="Votre Prénom"
                 Keyboard="Email"
                 ReturnType="Next" />
 

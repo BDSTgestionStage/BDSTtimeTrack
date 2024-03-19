@@ -25,7 +25,7 @@ namespace TimeTrack
                 string query = "SELECT COUNT(1) FROM Utilisateur WHERE UTI_Prenom=@username AND UTI_MotDePasse=@password";
                 SqlCommand command = new SqlCommand(query, _connection);
                 command.Parameters.AddWithValue("@username", username);
-                command.Parameters.AddWithValue("@password", password); // Ici, 'password' doit être hashé de la même manière qu'il est stocké en BDD
+                command.Parameters.AddWithValue("@password", password); 
                 int result = (int)command.ExecuteScalar();
                 return result > 0;
             }
