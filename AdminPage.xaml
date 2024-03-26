@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TimeTrack.AdminPage"
+             Title="Administration">
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25">
+            <Label 
+                Text="PAGE ADMIN"
+                VerticalOptions="Center" 
+                HorizontalOptions="Center" />
+
+            <!-- Les champs d'entrée pour l'ajout d'un nouvel utilisateur -->
+            <StackLayout Padding="10">
+                <Entry x:Name="Id" Placeholder="ID" />
+                <Entry x:Name="NomEntry" Placeholder="Nom" />
+                <Entry x:Name="PrenomEntry" Placeholder="Prénom" />
+                <Entry x:Name="PasswordEntryCreate" Placeholder="Mot de passe" />
+                <Entry x:Name="AuthEntry" Placeholder="Auth" />
+                <Entry x:Name="RoleEntry" Placeholder="Role (Utilisateur ou Administrateur)" />
+                <Button Text="Inscrire" Clicked="OnRegisterClicked"/>
+            </StackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
