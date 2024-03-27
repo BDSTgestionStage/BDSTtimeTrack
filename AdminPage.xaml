@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TimeTrack.AdminPage"
+             Title="Administration"
+             BackgroundColor="#f5f5f5">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25">
+            <Label 
+                Text="PAGE ADMIN"
+                FontSize="Large"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                TextColor="#333333" />
+
+            <!-- Les champs d'entrée pour l'ajout d'un nouvel utilisateur -->
+            <Frame >
+                <StackLayout>
+                    <Entry x:Name="Id" Placeholder="ID" />
+                    <Entry x:Name="NomEntry" Placeholder="Nom" />
+                    <Entry x:Name="PrenomEntry" Placeholder="Prénom" />
+                    <Entry x:Name="PasswordEntryCreate" Placeholder="Mot de passe" IsPassword="True" />
+                    <Entry x:Name="AuthEntry" Placeholder="Auth" />
+                    <Entry x:Name="RoleEntry" Placeholder="Role (Utilisateur ou Administrateur)" />
+                    <Button Text="Inscrire"
+                            BackgroundColor="#4CAF50"
+                            TextColor="White"
+                            CornerRadius="5"
+                            Clicked="OnRegisterClicked" />
+                </StackLayout>
+            </Frame>
+
+            <!-- Recherche par Auth -->
+            <Frame>
+                <StackLayout>
+                    <Entry x:Name="AuthSearchEntry" Placeholder="Rechercher par Auth" />
+                    <Button Text="Rechercher" Clicked="OnSearchClicked"></Button>
+                </StackLayout>
+            </Frame>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>
