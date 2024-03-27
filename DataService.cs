@@ -118,7 +118,7 @@ namespace TimeTrack
                             Id = Convert.ToInt32(reader["UTI_ID"]),
                             Nom = reader["UTI_Nom"].ToString(),
                             Prenom = reader["UTI_Prenom"].ToString(),
-                            Username = reader["UTI_Auth"].ToString(), // Assuming 'Username' is meant to hold the 'Auth' value
+                            Username = reader["UTI_Auth"].ToString(),
                             RoleId = reader["UTI_Role"].ToString()
                         };
                         return user;
@@ -140,6 +140,62 @@ namespace TimeTrack
                 }
             }
         }
+
+        public bool UpdateUser(string auth, string nom, string prenom, string motDePasseHash, string roleId)
+        {
+            try
+            {
+                _connection.Open();
+
+                string query = "UPDATE Utilisateur SET UTI_Nom = @Nom, UTI_Prenom = @Prenom, UTI_MotDePasse = @MotDePasse, UTI_Role = @RoleId WHERE UTI_Auth = @Auth";
+                SqlCommand command = new SqlCommand(query, _connection);
+
+                command.Parameters.AddWithValue("@Auth", auth);
+                command.Parameters.AddWithValue("@Nom", nom);
+                command.Parameters.AddWithValue("@Prenom", prenom);
+                command.Parameters.AddWithValue("@MotDePasse", motDePasseHash);
+                command.Parameters.AddWithValue("@RoleId", roleId);
+
+                int result = command.ExecuteNonQuery();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Gérer l'exception ici
+                return false;
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
+        public bool DeleteUser(string auth)
+        {
+            try
+            {
+                _connection.Open();
+
+                string query = "DELETE FROM Utilisateur WHERE UTI_Auth = @Auth";
+                SqlCommand command = new SqlCommand(query, _connection);
+
+                command.Parameters.AddWithValue("@Auth", auth);
+
+                int result = command.ExecuteNonQuery();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception
+                return false;
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
+
 
     }
 

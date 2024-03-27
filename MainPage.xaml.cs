@@ -20,9 +20,9 @@ namespace TimeTrack
         {
             string username = UsernameEntry.Text;
             string password = PasswordEntry.Text;
-            DataService dataService = new DataService();
+            var dataservice = new DataService();
             // La fonction retourne maintenant un Tuple
-            var authResult = dataService.AuthenticateUser(username, GenerateSHA256Hash(password));
+            var authResult = dataservice.AuthenticateUser(username, GenerateSHA256Hash(password));
 
             // Utilisation de authResult.Item1 pour vérifier si l'utilisateur est authentifié
             if (authResult.Item1)

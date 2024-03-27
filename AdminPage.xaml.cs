@@ -3,6 +3,7 @@ using Microsoft.Maui.Controls;
 using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Generic;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 
 namespace TimeTrack
@@ -70,8 +71,8 @@ namespace TimeTrack
                 return;
             }
 
-            DataService dataService = new DataService();
-            bool userAdded = dataService.AddUser(id, nom, prenom, motDePasseHash, auth, roleId);
+            var dataservice = new DataService();
+            bool userAdded = dataservice.AddUser(id, nom, prenom, motDePasseHash, auth, roleId);
 
             if (userAdded)
             {
@@ -106,11 +107,81 @@ namespace TimeTrack
             }
         }
 
+        private async void OnDeleteClicked(object sender, EventArgs e)
+        {
+            // Implémentation de la logique de suppression
+            string auth = AuthSearchEntry.Text;
+            if (string.IsNullOrWhiteSpace(auth))
+            {
+                await DisplayAlert("Erreur", "Le champ de recherche Auth pour la suppression ne peut pas être vide.", "OK");
+                return;
+            }
 
+            var dataservice = new DataService();
+            bool isDeleted = dataservice.DeleteUser(auth);
+            if (isDeleted)
+            {
+                await DisplayAlert("Succès", "Utilisateur supprimé avec succès.", "OK");
+            }
+            else
+            {
+                await DisplayAlert("Erreur", "La suppression a échoué.", "OK");
+            }
+        }
+
+        private async void OnUpdateClicked(object sender, EventArgs e)
+        {
+            // Récupérer l'Auth saisi
+            string authSearch = AuthSearchEntry.Text;
+
+            if (string.IsNullOrWhiteSpace(authSearch))
+            {
+                await DisplayAlert("Erreur", "Le champ Auth ne peut pas être vide.", "OK");
+                return;
+            }
+
+            // Récupérer les données de l'utilisateur depuis la base de données
+            var dataservice = new DataService();
+            Utilisateur user = dataservice.GetUserByAuth(authSearch);
+
+            if (user != null)
+            {
+                // Récupération des données de l'utilisateur
+                string auth = AuthSearchEntry.Text;
+                string nom = await DisplayPromptAsync("Modification", "Nom", initialValue: user.Nom);
+                string prenom = await DisplayPromptAsync("Modification", "Prénom", initialValue: user.Prenom);
+                string roleId = await DisplayPromptAsync("Modification", "Role", initialValue: user.RoleId);
+                string motDePasse = await DisplayPromptAsync("Modification", "Mot de passe");
+
+
+                string motDePasseHash = GenerateSHA256Hash(motDePasse);
+                // ... d'autres champs si nécessaire
+
+                // Ici, vous pouvez mettre à jour les valeurs si elles ont été modifiées
+                if (!string.IsNullOrWhiteSpace(nom) && !string.IsNullOrWhiteSpace(prenom) && !string.IsNullOrWhiteSpace(roleId))
+                {
+                    bool isUpdated = dataservice.UpdateUser(auth,nom, prenom, motDePasseHash, roleId);
+                    if (isUpdated)
+                    {
+                        await DisplayAlert("Succès", "Utilisateur mis à jour avec succès.", "OK");
+                    }
+                    else
+                    {
+                        await DisplayAlert("Erreur", "La mise à jour a échoué.", "OK");
+                    }
+                }
+                else
+                {
+                    await DisplayAlert("Erreur", "Les informations ne peuvent pas être vides.", "OK");
+                }
+            }
+
+            else
+            {
+                await DisplayAlert("Erreur", "Aucun utilisateur trouvé avec cet Auth.", "OK");
+            }
+        }
 
 
     }
-
-
-
 }

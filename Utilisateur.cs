@@ -13,6 +13,8 @@ namespace TimeTrack
         public string Prenom { get; set; }
         public string Username { get; set; }
         public string RoleId { get; set; }
+        public string MotDePasse { get; set; }
+        public string Authentification { get; set; }
 
     }
 }
