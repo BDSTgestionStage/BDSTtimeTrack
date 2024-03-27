@@ -6,11 +6,11 @@ using System.Text;
 
 namespace TimeTrack
 {
-    public class DataServiceSQL
+    public class DataService
     {
         private readonly SqlConnection _connection;
 
-        public DataServiceSQL()
+        public DataService()
         {
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
             builder.UserID = "sa";
@@ -100,7 +100,46 @@ namespace TimeTrack
             }
         }
 
-        
+        public Utilisateur GetUserByAuth(string auth)
+        {
+            try
+            {
+                _connection.Open();
+                string query = "SELECT UTI_ID, UTI_Nom, UTI_Prenom, UTI_Auth, UTI_Role FROM Utilisateur WHERE UTI_Auth=@Auth";
+                SqlCommand command = new SqlCommand(query, _connection);
+                command.Parameters.AddWithValue("@Auth", auth);
+
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        Utilisateur user = new Utilisateur()
+                        {
+                            Id = Convert.ToInt32(reader["UTI_ID"]),
+                            Nom = reader["UTI_Nom"].ToString(),
+                            Prenom = reader["UTI_Prenom"].ToString(),
+                            Username = reader["UTI_Auth"].ToString(), // Assuming 'Username' is meant to hold the 'Auth' value
+                            RoleId = reader["UTI_Role"].ToString()
+                        };
+                        return user;
+                    }
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                // Handle the exception (log the error, etc.)
+                return null;
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                {
+                    _connection.Close();
+                }
+            }
+        }
 
     }
 

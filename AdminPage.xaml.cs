@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Collections.Generic;
 
+
 namespace TimeTrack
 {
     public partial class AdminPage : ContentPage
@@ -69,7 +70,7 @@ namespace TimeTrack
                 return;
             }
 
-            DataServiceSQL dataService = new DataServiceSQL();
+            DataService dataService = new DataService();
             bool userAdded = dataService.AddUser(id, nom, prenom, motDePasseHash, auth, roleId);
 
             if (userAdded)
@@ -81,6 +82,35 @@ namespace TimeTrack
                 await DisplayAlert("Erreur", "L'enregistrement a échoué. diya", "OK");
             }
         }
+
+        private async void OnSearchClicked(object sender, EventArgs e)
+        {
+            var dataservice = new DataService();
+            string auth = AuthSearchEntry.Text;
+            if (string.IsNullOrWhiteSpace(auth))
+            {
+                await DisplayAlert("Erreur", "Le champ de recherche Auth ne peut pas être vide.", "OK");
+                return;
+            }
+
+            Utilisateur user = dataservice.GetUserByAuth(auth);
+            if (user != null)
+            {
+                await DisplayAlert("Détails de l'utilisateur",
+                    $"ID: {user.Id}\nNom: {user.Nom}\nPrénom: {user.Prenom}\nRole: {user.RoleId}",
+                    "OK");
+            }
+            else
+            {
+                await DisplayAlert("Erreur", "Aucun utilisateur trouvé avec cet Auth.", "OK");
+            }
+        }
+
+
+
+
     }
+
+
 
 }
