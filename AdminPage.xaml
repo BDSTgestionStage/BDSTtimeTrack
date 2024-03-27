@@ -35,7 +35,11 @@
             <Frame>
                 <StackLayout>
                     <Entry x:Name="AuthSearchEntry" Placeholder="Rechercher par Auth" />
-                    <Button Text="Rechercher" Clicked="OnSearchClicked"></Button>
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="FillAndExpand">
+                        <Button Text="Rechercher" Clicked="OnSearchClicked"></Button>
+                        <Button Text="Supprimer" BackgroundColor="Red" TextColor="White" Clicked="OnDeleteClicked"></Button>
+                        <Button Text="Modifier" BackgroundColor="Orange" TextColor="White" Clicked="OnUpdateClicked"></Button>
+                    </StackLayout>
                 </StackLayout>
             </Frame>
 
