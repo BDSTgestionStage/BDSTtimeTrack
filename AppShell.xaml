@@ -4,9 +4,9 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:TimeTrack"
-    Shell.FlyoutBehavior="Locked"
-    Shell.PresentationMode="Modal"
-    Title="TimeTrack">
+    Title="TimeTrack"
+    Shell.FlyoutBehavior="Disabled"
+    Shell.NavBarIsVisible="False">
 
     <ShellContent
         Title="Connexion"
