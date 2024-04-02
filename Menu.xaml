@@ -36,7 +36,7 @@
                     <Button
                      x:Name="DecoBtn"
                      Text="Déconnexion"
-                     Clicked="OnLoginClicked"
+                     Clicked="DecoBtn_Clicked"
                      HorizontalOptions="Fill" 
                      Margin="30"
                       Padding="10"/>
