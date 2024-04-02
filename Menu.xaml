@@ -34,6 +34,15 @@
                       Padding="10"/>
 
                     <Button
+                    x:Name="GestBtn"
+                    Text="Gestion Utilisateur"
+                    Clicked="OnGestionClicked"
+                    HorizontalOptions="Fill"
+                    Margin="30"
+                    Padding="10"
+                    IsVisible="{Binding IsGestionButtonVisible}" />
+
+                    <Button
                      x:Name="DecoBtn"
                      Text="Déconnexion"
                      Clicked="OnLoginClicked"

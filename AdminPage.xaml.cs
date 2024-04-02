@@ -10,7 +10,7 @@ namespace TimeTrack
 {
     public partial class AdminPage : ContentPage
     {
-        private string roleId;
+        private string RoleLibelle;
         public AdminPage()
         {
             InitializeComponent();
@@ -36,24 +36,17 @@ namespace TimeTrack
 
         private async void OnRegisterClicked(object sender, EventArgs e)
         {
-            int id;
 
             string nom = NomEntry.Text;
             string prenom = PrenomEntry.Text;
             string auth = AuthEntry.Text;
-            roleId = RoleEntry.Text;
+            RoleLibelle = RoleEntry.Text;
             string motDePasse = PasswordEntryCreate.Text;
             string motDePasseHash = GenerateSHA256Hash(motDePasse);
             var rolesValides = new List<string> { "Administrateur", "Utilisateur" };
 
-            if (!int.TryParse(Id.Text, out id))
-            {
-                // Afficher un message d'erreur si la conversion échoue
-                await DisplayAlert("Erreur", "L'ID doit être un nombre entier.", "OK");
-                return; // Sortir de la méthode si la conversion a échoué
-            }
 
-            if (!rolesValides.Contains(roleId))
+            if (!rolesValides.Contains(RoleLibelle))
             {
                 await DisplayAlert("Erreur", "Veuillez saisir un rôle valide (Administrateur ou Utilisateur).", "OK");
                 return;
@@ -72,7 +65,7 @@ namespace TimeTrack
             }
 
             var dataservice = new DataService();
-            bool userAdded = dataservice.AddUser(id, nom, prenom, motDePasseHash, auth, roleId);
+            bool userAdded = dataservice.AddUser(nom, prenom, motDePasseHash, auth, RoleLibelle);
 
             if (userAdded)
             {
@@ -150,7 +143,7 @@ namespace TimeTrack
                 string auth = AuthSearchEntry.Text;
                 string nom = await DisplayPromptAsync("Modification", "Nom", initialValue: user.Nom);
                 string prenom = await DisplayPromptAsync("Modification", "Prénom", initialValue: user.Prenom);
-                string roleId = await DisplayPromptAsync("Modification", "Role", initialValue: user.RoleId);
+                string RoleLibelle = await DisplayPromptAsync("Modification", "Role", initialValue: user.RoleId);
                 string motDePasse = await DisplayPromptAsync("Modification", "Mot de passe");
 
 
@@ -158,9 +151,9 @@ namespace TimeTrack
                 // ... d'autres champs si nécessaire
 
                 // Ici, vous pouvez mettre à jour les valeurs si elles ont été modifiées
-                if (!string.IsNullOrWhiteSpace(nom) && !string.IsNullOrWhiteSpace(prenom) && !string.IsNullOrWhiteSpace(roleId))
+                if (!string.IsNullOrWhiteSpace(nom) && !string.IsNullOrWhiteSpace(prenom) && !string.IsNullOrWhiteSpace(RoleLibelle))
                 {
-                    bool isUpdated = dataservice.UpdateUser(auth,nom, prenom, motDePasseHash, roleId);
+                    bool isUpdated = dataservice.UpdateUser(auth,nom, prenom, motDePasseHash, RoleLibelle);
                     if (isUpdated)
                     {
                         await DisplayAlert("Succès", "Utilisateur mis à jour avec succès.", "OK");

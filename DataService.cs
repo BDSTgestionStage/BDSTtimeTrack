@@ -20,41 +20,32 @@ namespace TimeTrack
             _connection = new SqlConnection(builder.ConnectionString);
         }
 
-        public Tuple<bool, string> AuthenticateUser(string username, string password)
+        public Tuple<bool, string, int> AuthenticateUser(string username, string password)
         {
             try
             {
                 _connection.Open();
-                // Note : Il est préférable de ne sélectionner que les champs nécessaires plutôt que d'utiliser SELECT *
-                string query = "SELECT UTI_Role, UTI_Prenom, UTI_MotDePasse FROM Utilisateur WHERE UTI_Prenom=@username AND UTI_MotDePasse=@password";
+                string query = "SELECT UTI_ID, UTI_Role, UTI_Prenom FROM Utilisateur WHERE UTI_Prenom=@username AND UTI_MotDePasse=@password";
                 SqlCommand command = new SqlCommand(query, _connection);
                 command.Parameters.AddWithValue("@username", username);
                 command.Parameters.AddWithValue("@password", password);
 
-                // ExecuteScalar retourne la première colonne de la première ligne dans le jeu de résultats retourné par la requête
-                // Dans ce cas, il s'agit de UTI_Role
-                var roleIdObject = command.ExecuteScalar();
-
-                _connection.Close();
-
-                // Si roleIdObject n'est pas null, cela signifie que l'utilisateur a été authentifié avec succès
-                if (roleIdObject != null)
+                SqlDataReader reader = command.ExecuteReader();
+                if (reader.Read())
                 {
-                    string roleId = roleIdObject.ToString();
-                    // Authentification réussie, retourner true et le roleId
-                    return Tuple.Create(true, roleId);
+                    int userId = Convert.ToInt32(reader["UTI_ID"]);
+                    string roleLibelle = reader["UTI_Role"].ToString();
+                    return Tuple.Create(true, roleLibelle, userId);
                 }
                 else
                 {
-                    // Authentification échouée, retourner false et null pour le roleId
-                    return Tuple.Create(false, (string)null);
+                    return Tuple.Create(false, (string)null, -1); // Retourner -1 si l'authentification échoue
                 }
             }
             catch (Exception ex)
             {
                 // Gérer l'exception ici (par exemple, en loguant l'erreur)
-                // Ne pas oublier de fermer la connexion dans un bloc finally pour s'assurer qu'elle sera fermée quelle que soit l'issue de la tentative de connexion
-                return Tuple.Create(false, (string)null);
+                return Tuple.Create(false, (string)null, -1);
             }
             finally
             {
@@ -67,23 +58,22 @@ namespace TimeTrack
 
 
 
-        public bool AddUser(int id, string nom, string prenom, string motDePasse, string auth, string roleId)
+        public bool AddUser( string nom, string prenom, string motDePasse, string auth, string RoleLibelle)
         {
             try
             {
                 _connection.Open();
                
                 // Préparation de la commande SQL avec des paramètres
-                string query = "INSERT INTO Utilisateur (UTI_ID, UTI_Nom, UTI_Prenom, UTI_MotDePasse, UTI_Auth, UTI_Role) VALUES (@ID, @Nom, @Prenom, @MotDePasse, @Auth, @RoleId)";
+                string query = "INSERT INTO Utilisateur ( UTI_Nom, UTI_Prenom, UTI_MotDePasse, UTI_Auth, UTI_Role) VALUES ( @Nom, @Prenom, @MotDePasse, @Auth, @RoleId)";
                 SqlCommand command = new SqlCommand(query, _connection);
 
                 // Ajout des valeurs aux paramètres
-                command.Parameters.AddWithValue("@ID", id);
                 command.Parameters.AddWithValue("@Nom", nom);
                 command.Parameters.AddWithValue("@Prenom", prenom);
                 command.Parameters.AddWithValue("@MotDePasse", motDePasse);
                 command.Parameters.AddWithValue("@Auth", auth);
-                command.Parameters.AddWithValue("@RoleId", roleId);
+                command.Parameters.AddWithValue("@RoleId", RoleLibelle);
 
                 // Exécution de la commande
                 int result = command.ExecuteNonQuery();
@@ -141,7 +131,7 @@ namespace TimeTrack
             }
         }
 
-        public bool UpdateUser(string auth, string nom, string prenom, string motDePasseHash, string roleId)
+        public bool UpdateUser(string auth, string nom, string prenom, string motDePasseHash, string RoleLibelle)
         {
             try
             {
@@ -154,7 +144,7 @@ namespace TimeTrack
                 command.Parameters.AddWithValue("@Nom", nom);
                 command.Parameters.AddWithValue("@Prenom", prenom);
                 command.Parameters.AddWithValue("@MotDePasse", motDePasseHash);
-                command.Parameters.AddWithValue("@RoleId", roleId);
+                command.Parameters.AddWithValue("@RoleId", RoleLibelle);
 
                 int result = command.ExecuteNonQuery();
                 return result > 0;
