@@ -9,7 +9,7 @@ namespace TimeTrack
 {
     public partial class LoginPage : ContentPage
     {
-        private string roleId;
+        private string RoleLibelle;
         public LoginPage()
         {
             InitializeComponent();
@@ -21,27 +21,17 @@ namespace TimeTrack
             string username = UsernameEntry.Text;
             string password = PasswordEntry.Text;
             var dataservice = new DataService();
-            // La fonction retourne maintenant un Tuple
             var authResult = dataservice.AuthenticateUser(username, GenerateSHA256Hash(password));
 
-            // Utilisation de authResult.Item1 pour vérifier si l'utilisateur est authentifié
             if (authResult.Item1)
             {
-                // authResult.Item2 contient maintenant le roleId
-                string roleId = authResult.Item2;
+                string roleLibelle = authResult.Item2;
+                int userId = authResult.Item3; // Récupération de l'ID de l'utilisateur
 
-                if (roleId == "Administrateur")
-                {
-                    await Navigation.PushAsync(new AdminPage());
-                }
-                else if (roleId == "Utilisateur")
-                {
-                    await Navigation.PushAsync(new UserPage());
-                }
+                await Navigation.PushAsync(new Menu(roleLibelle, userId)); // Passez l'ID de l'utilisateur au constructeur du Menu
             }
             else
             {
-                // Afficher un message d'erreur.
                 await DisplayAlert("Erreur", "Nom d'utilisateur ou mot de passe incorrect.", "OK");
             }
         }
@@ -62,7 +52,7 @@ namespace TimeTrack
                 // Convertir le hash en string hexadécimal
                 string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
 
-                return hash;
+                return hash;    
             }
         }
 

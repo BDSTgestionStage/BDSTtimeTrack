@@ -17,7 +17,6 @@
             <!-- Les champs d'entrée pour l'ajout d'un nouvel utilisateur -->
             <Frame >
                 <StackLayout>
-                    <Entry x:Name="Id" Placeholder="ID" />
                     <Entry x:Name="NomEntry" Placeholder="Nom" />
                     <Entry x:Name="PrenomEntry" Placeholder="Prénom" />
                     <Entry x:Name="PasswordEntryCreate" Placeholder="Mot de passe" IsPassword="True" />
