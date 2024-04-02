@@ -2,9 +2,9 @@
 
 namespace TimeTrack
 {
-    public partial class DashboardPage : ContentPage
+    public partial class UserPage : ContentPage
     {
-        public DashboardPage()
+        public UserPage()
         {
             InitializeComponent();
         }

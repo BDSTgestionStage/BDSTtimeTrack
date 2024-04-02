@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="TimeTrack.Menu">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25">
+            <Label
+                Text="Menu"
+                FontSize="Title"
+                SemanticProperties.HeadingLevel="Level1"
+                HorizontalOptions="Center" />
+
+            <HorizontalStackLayout
+                HorizontalOptions="Center"
+                Padding="30"
+                Spacing="25">
+                <VerticalStackLayout>
+                    <Button
+                     x:Name="EntreeBtn"
+                     Text="Entrée"
+                     Clicked="OnLoginClicked"
+                     HorizontalOptions="Fill"
+                     Margin="30"
+                     Padding="10"/>
+                     
+                    <Button
+                     x:Name="SortieeBtn"
+                     Text="Sortie"
+                     Clicked="OnLoginClicked"
+                     HorizontalOptions="Fill" 
+                     IsEnabled="False"
+                     Margin="30"
+                      Padding="10"/>
+
+                    <Button
+                     x:Name="DecoBtn"
+                     Text="Déconnexion"
+                     Clicked="OnLoginClicked"
+                     HorizontalOptions="Fill" 
+                     Margin="30"
+                      Padding="10"/>
+                </VerticalStackLayout>
+                <VerticalStackLayout
+                    Padding="40"
+                    BackgroundColor="{StaticResource Primary}">
+                    <Label
+                Text="Historique de pointage"
+                FontSize="20"
+                SemanticProperties.HeadingLevel="Level1"
+                HorizontalOptions="Center" />
+                    <TableView Intent="Menu"
+                           Margin="20"
+                           >
+                    <TableRoot>
+                        <TableSection>
+                            <TextCell Text="13h34"
+                                      Detail="12 janvier 2024"/>
+                            <TextCell Text="18h10"
+                                      Detail="12 janvier 2024"/>
+                            <TextCell Text="08h10"
+                                Detail="13 janvier 2024"/>
+                            <TextCell Text="12h20"
+                                Detail="13 janvier 2024"/>
+
+                        </TableSection>
+                    </TableRoot>
+                    </TableView>
+                </VerticalStackLayout>
+            </HorizontalStackLayout>
+
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
