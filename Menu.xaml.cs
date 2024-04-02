@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Data;
-using System.Windows.Forms;
 using Microsoft.Identity.Client;
 using Microsoft.Maui.Controls;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
-using System.Data.SqlClient;
 
 
 namespace TimeTrack
@@ -14,13 +11,12 @@ namespace TimeTrack
         private string RoleLibelle;
         private int UserId;
 
+
         public Menu(string role, int userId)
         {
             RoleLibelle = role;
             UserId = userId;
             InitializeComponent();
-
-
 
             SetupUIBasedOnRole();
         }
@@ -54,7 +50,7 @@ namespace TimeTrack
                 UserId = -1;
                 SetupUIBasedOnRole();
 
-                Navigation.PushAsync(new LoginPage());  
+                Navigation.PushAsync(new LoginPage());
             }
             catch (Exception ex)
             {
