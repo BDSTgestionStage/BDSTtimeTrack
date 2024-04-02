@@ -45,6 +45,19 @@ namespace TimeTrack
         private void DecoBtn_Clicked(object sender, EventArgs e)
         {
 
+            try
+            {
+                RoleLibelle = null;
+                UserId = -1;
+                SetupUIBasedOnRole();
+
+                Navigation.PushAsync(new LoginPage());
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                DisplayAlert("Déconnexion échouée", "Une erreur s'est produite lors de la déconnexion. Veuillez essayer de nouveau.", "OK");
+            }
         }
 
         private async void OnGestionClicked(object sender, EventArgs e)
