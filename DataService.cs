@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
 using System.Text;
+using Windows.Devices.Printers;
 
 namespace TimeTrack
 {
@@ -15,7 +16,7 @@ namespace TimeTrack
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
             builder.UserID = "sa";
             builder.Password = "Info76240#";
-            builder.InitialCatalog = "MLR1";
+            builder.InitialCatalog = "BDST_TimeTrack";
             builder.DataSource = "localhost";
             _connection = new SqlConnection(builder.ConnectionString);
         }
@@ -25,8 +26,9 @@ namespace TimeTrack
             try
             {
                 _connection.Open();
-                string query = "SELECT UTI_ID, UTI_Role, UTI_Prenom FROM Utilisateur WHERE UTI_Prenom=@username AND UTI_MotDePasse=@password";
-                SqlCommand command = new SqlCommand(query, _connection);
+                // Note : Il est préférable de ne sélectionner que les champs nécessaires plutôt que d'utiliser SELECT *
+                var command = new SqlCommand("BDST_AuthenticateUser", _connection);
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@username", username);
                 command.Parameters.AddWithValue("@password", password);
 
