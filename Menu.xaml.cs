@@ -54,9 +54,9 @@ namespace TimeTrack
                 Navigation.PushAsync(new LoginPage());
             }
             catch (Exception ex)
-            {
+            { 
                 Console.Error.WriteLine(ex.Message);
-                DisplayAlert("Déconnexion échouée", "Une erreur s'est produite lors de la déconnexion. Veuillez essayer de nouveau.", "OK");
+                DisplayAlert("Déconnexion échouée", "Une erreur s'est produite lors de la déconnexion.", "OK");
             }
         }
 
