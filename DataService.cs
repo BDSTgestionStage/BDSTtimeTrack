@@ -108,6 +108,52 @@ namespace TimeTrack
             }
         }
 
+        public List<Pointage> GetPointagesForUser(int userId)
+        {
+            List<Pointage> pointages = new List<Pointage>();
+
+            try
+            {
+                // Ouvrir la connexion
+                _connection.Open();
+
+                // Requête SQL pour sélectionner les pointages de l'utilisateur connecté
+                string query = "SELECT POINT_HEURE FROM Pointage WHERE UTI_ID = @UserId";
+
+                // Exécuter la commande SQL
+                using (SqlCommand command = new SqlCommand(query, _connection))
+                {
+                    // Ajouter le paramètre pour l'ID de l'utilisateur
+                    command.Parameters.AddWithValue("@UserId", userId);
+
+                    // Exécuter la commande et récupérer les résultats
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        // Parcourir les résultats et ajouter les pointages à la liste
+                        while (reader.Read())
+                        {
+                            DateTime pointageDateTime = reader.GetDateTime(0);
+                            pointages.Add(new Pointage { Heure = pointageDateTime.ToString("HH:mm"), Date = pointageDateTime.ToString("dd MMMM yyyy") });
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                // Gérer l'exception ici (log l'erreur, etc.)
+            }
+            finally
+            {
+                // Fermer la connexion
+                if (_connection.State == ConnectionState.Open)
+                {
+                    _connection.Close();
+                }
+            }
+
+            return pointages;
+        }
+
         public Utilisateur GetUserByAuth(string auth)
         {
             try
@@ -220,10 +266,41 @@ namespace TimeTrack
                 _connection.Close();
             }
         }
+        public bool AddPointage(int userId, DateTime heure)
+        {
+            try
+            {
+                _connection.Open();
+
+                // Préparation de la commande SQL avec des paramètres
+                string query = "INSERT INTO Pointage (POINT_HEURE, UTI_ID) VALUES (@Heure, @UserId)";
+                SqlCommand command = new SqlCommand(query, _connection);
+
+                // Ajout des valeurs aux paramètres
+                command.Parameters.AddWithValue("@Heure", heure);
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                // Exécution de la commande
+                int result = command.ExecuteNonQuery();
+                return result > 0;
+            }
+            catch (Exception ex)
+            {
+                // Gérer l'exception ici (log l'erreur, etc.)
+                return false;
+            }
+            finally
+            {
+                _connection.Close();
+            }
+        }
+
+
 
 
 
     }
+
 
 }
 
