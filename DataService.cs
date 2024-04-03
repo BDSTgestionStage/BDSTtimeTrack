@@ -117,24 +117,21 @@ namespace TimeTrack
                 // Ouvrir la connexion
                 _connection.Open();
 
-                // Requête SQL pour sélectionner les pointages de l'utilisateur connecté
-                string query = "SELECT POINT_HEURE FROM Pointage WHERE UTI_ID = @UserId";
+                // Préparation de la commande SQL pour appeler la procédure stockée
+                SqlCommand command = new SqlCommand("GetPointagesForUser", _connection);
+                command.CommandType = CommandType.StoredProcedure;
 
-                // Exécuter la commande SQL
-                using (SqlCommand command = new SqlCommand(query, _connection))
+                // Ajouter le paramètre pour l'ID de l'utilisateur
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                // Exécuter la commande et récupérer les résultats
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    // Ajouter le paramètre pour l'ID de l'utilisateur
-                    command.Parameters.AddWithValue("@UserId", userId);
-
-                    // Exécuter la commande et récupérer les résultats
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    // Parcourir les résultats et ajouter les pointages à la liste
+                    while (reader.Read())
                     {
-                        // Parcourir les résultats et ajouter les pointages à la liste
-                        while (reader.Read())
-                        {
-                            DateTime pointageDateTime = reader.GetDateTime(0);
-                            pointages.Add(new Pointage { Heure = pointageDateTime.ToString("HH:mm"), Date = pointageDateTime.ToString("dd MMMM yyyy") });
-                        }
+                        DateTime pointageDateTime = reader.GetDateTime(0);
+                        pointages.Add(new Pointage { Heure = pointageDateTime.ToString("HH:mm"), Date = pointageDateTime.ToString("dd MMMM yyyy") });
                     }
                 }
             }
@@ -153,7 +150,6 @@ namespace TimeTrack
 
             return pointages;
         }
-
         public Utilisateur GetUserByAuth(string auth)
         {
             try
@@ -273,12 +269,12 @@ namespace TimeTrack
                 _connection.Open();
 
                 // Préparation de la commande SQL avec des paramètres
-                string query = "INSERT INTO Pointage (POINT_HEURE, UTI_ID) VALUES (@Heure, @UserId)";
-                SqlCommand command = new SqlCommand(query, _connection);
+                SqlCommand command = new SqlCommand("AddPointage", _connection);
+                command.CommandType = CommandType.StoredProcedure;
 
-                // Ajout des valeurs aux paramètres
-                command.Parameters.AddWithValue("@Heure", heure);
+                // Ajout des paramètres à la commande
                 command.Parameters.AddWithValue("@UserId", userId);
+                command.Parameters.AddWithValue("@Heure", heure);
 
                 // Exécution de la commande
                 int result = command.ExecuteNonQuery();
