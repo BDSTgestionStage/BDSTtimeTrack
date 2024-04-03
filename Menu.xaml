@@ -23,7 +23,7 @@
                      HorizontalOptions="Fill"
                      Margin="30"
                      Padding="10"/>
-                     
+
                     <Button
                      x:Name="SortieeBtn"
                      Text="Sortie"
@@ -45,7 +45,7 @@
                     <Button
                      x:Name="DecoBtn"
                      Text="Déconnexion"
-                     Clicked="OnLoginClicked"
+                     Clicked="DecoBtn_Clicked"
                      HorizontalOptions="Fill" 
                      Margin="30"
                       Padding="10"/>
