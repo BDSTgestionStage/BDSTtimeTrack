@@ -19,15 +19,15 @@
                     <Button
                      x:Name="EntreeBtn"
                      Text="Entrée"
-                     Clicked="OnLoginClicked"
+                     Clicked="OnStart_Clicked"
                      HorizontalOptions="Fill"
                      Margin="30"
                      Padding="10"/>
 
                     <Button
-                     x:Name="SortieeBtn"
+                     x:Name="SortieBtn"
                      Text="Sortie"
-                     Clicked="OnLoginClicked"
+                     Clicked="OnEnd_Clicked"
                      HorizontalOptions="Fill" 
                      IsEnabled="False"
                      Margin="30"
@@ -42,43 +42,33 @@
                     Padding="10"
                     IsVisible="{Binding IsGestionButtonVisible}" />
 
-                    <Button
-                     x:Name="DecoBtn"
-                     Text="Déconnexion"
-                     Clicked="DecoBtn_Clicked"
-                     HorizontalOptions="Fill" 
-                     Margin="30"
-                      Padding="10"/>
+                    <!--   <Button -->
+                    <!--      x:Name="DecoBtn"-->
+                    <!--     Text="Déconnexion"-->
+                    <!--   Clicked="OnLoginClicked"v-->
+                    <!--      HorizontalOptions="Fill" -->
+                    <!--     Margin="30"-->
+                    <!--       Padding="10"/>-->
+                     
+
                 </VerticalStackLayout>
-                <VerticalStackLayout
-                    Padding="40"
-                    BackgroundColor="{StaticResource Primary}">
+                <StackLayout>
                     <Label
-                Text="Historique de pointage"
-                FontSize="20"
-                SemanticProperties.HeadingLevel="Level1"
-                HorizontalOptions="Center" />
-                    <TableView Intent="Menu"
-                           Margin="20"
-                           >
-                    <TableRoot>
-                        <TableSection>
-                            <TextCell Text="13h34"
-                                      Detail="12 janvier 2024"/>
-                            <TextCell Text="18h10"
-                                      Detail="12 janvier 2024"/>
-                            <TextCell Text="08h10"
-                                Detail="13 janvier 2024"/>
-                            <TextCell Text="12h20"
-                                Detail="13 janvier 2024"/>
+                        Text="Historique de pointage"
+                        FontSize="20"
+                        SemanticProperties.HeadingLevel="Level1"
+                        HorizontalOptions="Center" />
 
-                        </TableSection>
-                    </TableRoot>
-                    </TableView>
-                </VerticalStackLayout>
+                    <!-- Affichage de l'historique des pointages -->
+                    <ListView x:Name="PointageListView">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextCell Text="{Binding Heure}" Detail="{Binding Date}" />
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackLayout>
             </HorizontalStackLayout>
-
-
         </VerticalStackLayout>
     </ScrollView>
 
