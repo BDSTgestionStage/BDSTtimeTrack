@@ -11,8 +11,10 @@ namespace TimeTrack
     {
         private readonly SqlConnection _connection;
 
+
         public DataService()
         {
+            Application.Current.UserAppTheme = AppTheme.Dark;
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
             builder.UserID = "sa";
             builder.Password = "Info76240#";
