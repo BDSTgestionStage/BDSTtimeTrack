@@ -57,13 +57,17 @@
 
 
         </VerticalStackLayout>
-                <StackLayout>
+                <StackLayout BackgroundColor="#ff7e00"
+                             Padding="20, 40"
+                        MaximumHeightRequest="600"
+                             >
                     <Label
                         Text="Historique de pointage"
                         FontSize="20"
                         SemanticProperties.HeadingLevel="Level1"
-                        HorizontalOptions="Center" />
-
+                        HorizontalOptions="Center" 
+                        Padding="40, 0" 
+                      />
                     <!-- Affichage de l'historique des pointages -->
                     <ListView x:Name="PointageListView">
                         <ListView.ItemTemplate>

@@ -7,7 +7,6 @@
     Title="TimeTrack"
     Shell.FlyoutBehavior="Disabled"
     Shell.NavBarIsVisible="False">
-
     <ShellContent
         Title="Connexion"
         ContentTemplate="{DataTemplate local:LoginPage}"
