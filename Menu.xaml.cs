@@ -17,7 +17,7 @@ namespace TimeTrack
             RoleLibelle = role;
             UserId = userId;
             _dataService = new DataService();
-            InitializeComponent();  
+            InitializeComponent();
             SetupUIBasedOnRole();
             LoadPointageData();
         }
@@ -27,6 +27,8 @@ namespace TimeTrack
             // Récupérer les données de pointage de l'utilisateur connecté à partir du service de données
             DataService dataService = new DataService();
             List<Pointage> pointages = dataService.GetPointagesForUser(UserId);
+            pointages = pointages.OrderByDescending(p => DateTime.Parse(p.Date + " " + p.Heure)).ToList();
+
 
             // Associer les données à la ListView
             PointageListView.ItemsSource = pointages;
@@ -52,6 +54,8 @@ namespace TimeTrack
         {
             // Rechargez les données d'historique en utilisant votre service de données
             List<Pointage> pointages = _dataService.GetPointagesForUser(UserId);
+            pointages = pointages.OrderByDescending(p => DateTime.Parse(p.Date + " " + p.Heure)).ToList();
+
 
             // Mettez à jour la source de données de votre vue
             PointageListView.ItemsSource = pointages;
@@ -109,6 +113,24 @@ namespace TimeTrack
         private async void OnGestionClicked(object sender, EventArgs e)
         {
             await Navigation.PushAsync(new AdminPage());
+        }
+
+        private void DecoBtn_Clicked(object sender, EventArgs e)
+        {
+
+            try
+            {
+                RoleLibelle = null;
+                UserId = -1;
+                SetupUIBasedOnRole();
+
+                Navigation.PushAsync(new LoginPage());
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine(ex.Message);
+                DisplayAlert("Déconnexion échouée", "Une erreur s'est produite lors de la déconnexion. Veuillez essayer de nouveau.", "OK");
+            }
         }
     }
 }
