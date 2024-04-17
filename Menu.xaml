@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+﻿<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="TimeTrack.Menu">
 
@@ -57,12 +56,19 @@
 
 
         </VerticalStackLayout>
-                <StackLayout>
+                <StackLayout BackgroundColor="#b95b00" Padding="15">
                     <Label
-                        Text="Historique de pointage"
+                        Text="Historique de pointage du :"
                         FontSize="20"
                         SemanticProperties.HeadingLevel="Level1"
                         HorizontalOptions="Center" />
+
+                    <!-- Barre d'outils pour la navigation -->
+                    <StackLayout Orientation="Horizontal" HorizontalOptions="Center" Spacing="10">
+                        <Button Text="&lt;" Clicked="OnPreviousDayClicked" BackgroundColor="DarkGrey" TextColor="White" />
+                        <Label x:Name="SelectedDateLabel" Text="{Binding SelectedDate}" HorizontalOptions="Center" VerticalOptions="Center" />
+                        <Button Text=">" Clicked="OnNextDayClicked" BackgroundColor="DarkGrey" TextColor="White" />
+                    </StackLayout>
 
                     <!-- Affichage de l'historique des pointages -->
                     <ListView x:Name="PointageListView">
@@ -73,6 +79,7 @@
                         </ListView.ItemTemplate>
                     </ListView>
                 </StackLayout>
+
             </HorizontalStackLayout>
         </VerticalStackLayout>
     </ScrollView>
