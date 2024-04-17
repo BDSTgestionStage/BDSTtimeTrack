@@ -11,8 +11,10 @@ namespace TimeTrack
     {
         private readonly SqlConnection _connection;
 
+
         public DataService()
         {
+            Application.Current.UserAppTheme = AppTheme.Dark;
             SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
             builder.UserID = "sa";
             builder.Password = "Info76240#";
@@ -60,37 +62,54 @@ namespace TimeTrack
 
 
 
-        public bool AddUser( string nom, string prenom, string motDePasse, string auth, string RoleLibelle)
+        public bool AddUser(string nom, string prenom, string motDePasse, string auth, string RoleLibelle)
         {
             try
             {
                 _connection.Open();
-               
-                // Préparation de la commande SQL avec des paramètres
-                string query = "INSERT INTO Utilisateur ( UTI_Nom, UTI_Prenom, UTI_MotDePasse, UTI_Auth, UTI_Role) VALUES ( @Nom, @Prenom, @MotDePasse, @Auth, @RoleId)";
-                SqlCommand command = new SqlCommand(query, _connection);
 
-                // Ajout des valeurs aux paramètres
-                command.Parameters.AddWithValue("@Nom", nom);
-                command.Parameters.AddWithValue("@Prenom", prenom);
-                command.Parameters.AddWithValue("@MotDePasse", motDePasse);
-                command.Parameters.AddWithValue("@Auth", auth);
-                command.Parameters.AddWithValue("@RoleId", RoleLibelle);
+                // Préparation de la commande SQL pour appeler la procédure stockée
+                SqlCommand command = new SqlCommand("CreerNouvelUtilisateur", _connection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                // Ajout des paramètres à la commande
+                command.Parameters.AddWithValue("@UTI_ID", -1); // L'ID sera généré automatiquement dans la procédure stockée
+                command.Parameters.AddWithValue("@UTI_NOM", nom);
+                command.Parameters.AddWithValue("@UTI_PRENOM", prenom);
+                command.Parameters.AddWithValue("@UTI_AUTH", auth);
+                command.Parameters.AddWithValue("@UTI_MOTDEPASSE", motDePasse);
+                command.Parameters.AddWithValue("@UTI_ROLE", RoleLibelle); // Utilisation du rôle fourni en paramètre
 
                 // Exécution de la commande
-                int result = command.ExecuteNonQuery();
-                return result > 0;
+                int rowsAffected = command.ExecuteNonQuery();
+
+                // Vérification du nombre de lignes affectées
+                if (rowsAffected > 0)
+                {
+                    Console.WriteLine("La procédure stockée a été exécutée avec succès.");
+                    return true; // Retourne true lorsque l'ajout de l'utilisateur est réussi
+                }
+                else
+                {
+                    Console.WriteLine("Erreur lors de l'exécution de la procédure stockée.");
+                    return false;
+                }
             }
             catch (Exception ex)
             {
                 // Gérer l'exception ici (log l'erreur, etc.)
+                Console.WriteLine("Erreur lors de l'ajout de l'utilisateur : " + ex.Message);
                 return false;
             }
             finally
             {
-                _connection.Close();
+                if (_connection.State == ConnectionState.Open)
+                {
+                    _connection.Close();
+                }
             }
         }
+
         public List<Pointage> GetPointagesForUser(int userId)
         {
             List<Pointage> pointages = new List<Pointage>();
@@ -100,24 +119,21 @@ namespace TimeTrack
                 // Ouvrir la connexion
                 _connection.Open();
 
-                // Requête SQL pour sélectionner les pointages de l'utilisateur connecté
-                string query = "SELECT POINT_HEURE FROM Pointage WHERE UTI_ID = @UserId";
+                // Préparation de la commande SQL pour appeler la procédure stockée
+                SqlCommand command = new SqlCommand("GetPointagesForUser", _connection);
+                command.CommandType = CommandType.StoredProcedure;
 
-                // Exécuter la commande SQL
-                using (SqlCommand command = new SqlCommand(query, _connection))
+                // Ajouter le paramètre pour l'ID de l'utilisateur
+                command.Parameters.AddWithValue("@UserId", userId);
+
+                // Exécuter la commande et récupérer les résultats
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    // Ajouter le paramètre pour l'ID de l'utilisateur
-                    command.Parameters.AddWithValue("@UserId", userId);
-
-                    // Exécuter la commande et récupérer les résultats
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    // Parcourir les résultats et ajouter les pointages à la liste
+                    while (reader.Read())
                     {
-                        // Parcourir les résultats et ajouter les pointages à la liste
-                        while (reader.Read())
-                        {
-                            DateTime pointageDateTime = reader.GetDateTime(0);
-                            pointages.Add(new Pointage { Heure = pointageDateTime.ToString("HH:mm"), Date = pointageDateTime.ToString("dd MMMM yyyy") });
-                        }
+                        DateTime pointageDateTime = reader.GetDateTime(0);
+                        pointages.Add(new Pointage { Heure = pointageDateTime.ToString("HH:mm"), Date = pointageDateTime.ToString("dd MMMM yyyy") });
                     }
                 }
             }
@@ -136,15 +152,13 @@ namespace TimeTrack
 
             return pointages;
         }
-
-
         public Utilisateur GetUserByAuth(string auth)
         {
             try
             {
                 _connection.Open();
-                string query = "SELECT UTI_ID, UTI_Nom, UTI_Prenom, UTI_Auth, UTI_Role FROM Utilisateur WHERE UTI_Auth=@Auth";
-                SqlCommand command = new SqlCommand(query, _connection);
+                SqlCommand command = new SqlCommand("GetUserByAuth", _connection);
+                command.CommandType = CommandType.StoredProcedure;
                 command.Parameters.AddWithValue("@Auth", auth);
 
                 using (SqlDataReader reader = command.ExecuteReader())
@@ -167,7 +181,7 @@ namespace TimeTrack
             }
             catch (Exception ex)
             {
-                // Handle the exception (log the error, etc.)
+                // Gérer l'exception ici (par exemple, en journalisant l'erreur)
                 return null;
             }
             finally
@@ -179,20 +193,63 @@ namespace TimeTrack
             }
         }
 
-        public bool UpdateUser(string auth, string nom, string prenom, string motDePasseHash, string RoleLibelle)
+        public bool UpdateUser(string auth, string nom, string prenom, string motDePasseHash, string roleLibelle)
         {
             try
             {
                 _connection.Open();
 
-                string query = "UPDATE Utilisateur SET UTI_Nom = @Nom, UTI_Prenom = @Prenom, UTI_MotDePasse = @MotDePasse, UTI_Role = @RoleId WHERE UTI_Auth = @Auth";
-                SqlCommand command = new SqlCommand(query, _connection);
+                // Préparation de la commande SQL pour appeler la procédure stockée
+                SqlCommand command = new SqlCommand("UpdateUtilisateur", _connection);
+                command.CommandType = CommandType.StoredProcedure;
 
+                // Ajout des paramètres à la commande
                 command.Parameters.AddWithValue("@Auth", auth);
                 command.Parameters.AddWithValue("@Nom", nom);
                 command.Parameters.AddWithValue("@Prenom", prenom);
                 command.Parameters.AddWithValue("@MotDePasse", motDePasseHash);
-                command.Parameters.AddWithValue("@RoleId", RoleLibelle);
+                command.Parameters.AddWithValue("@Role", roleLibelle);
+
+                // Exécution de la commande
+                int rowsAffected = command.ExecuteNonQuery();
+
+                // Vérification du nombre de lignes affectées
+                if (rowsAffected > 0)
+                {
+                    Console.WriteLine("La procédure stockée a été exécutée avec succès.");
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Erreur lors de l'exécution de la procédure stockée.");
+                    return false;
+                }
+            }
+            catch (Exception ex)
+            {
+                // Gérer l'exception ici (log l'erreur, etc.)
+                return false;
+            }
+            finally
+            {
+                if (_connection.State == ConnectionState.Open)
+                {
+                    _connection.Close();
+                }
+            }
+        }
+
+
+        public bool DeleteUser(string auth)
+        {
+            try
+            {
+                _connection.Open();
+
+                SqlCommand command = new SqlCommand("DeleteUtilisateur", _connection);
+                command.CommandType = CommandType.StoredProcedure;
+
+                command.Parameters.AddWithValue("@Auth", auth);
 
                 int result = command.ExecuteNonQuery();
                 return result > 0;
@@ -207,31 +264,6 @@ namespace TimeTrack
                 _connection.Close();
             }
         }
-
-        public bool DeleteUser(string auth)
-        {
-            try
-            {
-                _connection.Open();
-
-                string query = "DELETE FROM Utilisateur WHERE UTI_Auth = @Auth";
-                SqlCommand command = new SqlCommand(query, _connection);
-
-                command.Parameters.AddWithValue("@Auth", auth);
-
-                int result = command.ExecuteNonQuery();
-                return result > 0;
-            }
-            catch (Exception ex)
-            {
-                // Handle the exception
-                return false;
-            }
-            finally
-            {
-                _connection.Close();
-            }
-        }
         public bool AddPointage(int userId, DateTime heure)
         {
             try
@@ -239,12 +271,12 @@ namespace TimeTrack
                 _connection.Open();
 
                 // Préparation de la commande SQL avec des paramètres
-                string query = "INSERT INTO Pointage (POINT_HEURE, UTI_ID) VALUES (@Heure, @UserId)";
-                SqlCommand command = new SqlCommand(query, _connection);
+                SqlCommand command = new SqlCommand("AddPointage", _connection);
+                command.CommandType = CommandType.StoredProcedure;
 
-                // Ajout des valeurs aux paramètres
-                command.Parameters.AddWithValue("@Heure", heure);
+                // Ajout des paramètres à la commande
                 command.Parameters.AddWithValue("@UserId", userId);
+                command.Parameters.AddWithValue("@Heure", heure);
 
                 // Exécution de la commande
                 int result = command.ExecuteNonQuery();

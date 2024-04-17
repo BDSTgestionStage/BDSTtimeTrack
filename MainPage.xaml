@@ -1,7 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="TimeTrack.LoginPage">
+                 x:Class="TimeTrack.LoginPage">
+             <Shell.BackButtonBehavior>
+                <BackButtonBehavior IsVisible="False" IsEnabled="False" />
+            </Shell.BackButtonBehavior>
+
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" />

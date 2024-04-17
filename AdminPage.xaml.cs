@@ -5,12 +5,10 @@ using System.Text;
 using System.Collections.Generic;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
-
 namespace TimeTrack
 {
     public partial class AdminPage : ContentPage
     {
-        private string RoleLibelle;
         public AdminPage()
         {
             InitializeComponent();
@@ -28,54 +26,55 @@ namespace TimeTrack
                 byte[] hashBytes = sha256Hash.ComputeHash(bytes);
 
                 // Convertir le hash en string hexadécimal
-                string hash = BitConverter.ToString(hashBytes).Replace("-", String.Empty);
-
-                return hash;
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < hashBytes.Length; i++)
+                {
+                    builder.Append(hashBytes[i].ToString("x2"));
+                }
+                return builder.ToString();
             }
         }
 
-        private async void OnRegisterClicked(object sender, EventArgs e)
-        {
-
-            string nom = NomEntry.Text;
-            string prenom = PrenomEntry.Text;
-            string auth = AuthEntry.Text;
-            RoleLibelle = RoleEntry.Text;
-            string motDePasse = PasswordEntryCreate.Text;
-            string motDePasseHash = GenerateSHA256Hash(motDePasse);
-            var rolesValides = new List<string> { "Administrateur", "Utilisateur" };
-
-
-            if (!rolesValides.Contains(RoleLibelle))
+            private async void OnRegisterClicked(object sender, EventArgs e)
             {
-                await DisplayAlert("Erreur", "Veuillez saisir un rôle valide (Administrateur ou Utilisateur).", "OK");
-                return;
-            }
+                string nom = NomEntry.Text;
+                string prenom = PrenomEntry.Text;
+                string auth = AuthEntry.Text;
+                string roleLibelle = RoleEntry.Text;
+                string motDePasse = PasswordEntryCreate.Text;
+                string motDePasseHash = GenerateSHA256Hash(motDePasse);
+                var rolesValides = new List<string> { "Administrateur", "Utilisateur" };
 
-            if (string.IsNullOrEmpty(motDePasse))
-            {
-                await DisplayAlert("Erreur", "Le mot de passe ne peut pas être vide.", "OK");
-                return;
-            }
+                if (!rolesValides.Contains(roleLibelle))
+                {
+                    await DisplayAlert("Erreur", "Veuillez saisir un rôle valide (Administrateur ou Utilisateur).", "OK");
+                    return;
+                }
 
-            if (string.IsNullOrEmpty(motDePasseHash))
-            {
-                await DisplayAlert("Erreur", "Le hachage du mot de passe a échoué.", "OK");
-                return;
-            }
+                if (string.IsNullOrEmpty(motDePasse))
+                {
+                    await DisplayAlert("Erreur", "Le mot de passe ne peut pas être vide.", "OK");
+                    return;
+                }
 
-            var dataservice = new DataService();
-            bool userAdded = dataservice.AddUser(nom, prenom, motDePasseHash, auth, RoleLibelle);
+                if (string.IsNullOrEmpty(motDePasseHash))
+                {
+                    await DisplayAlert("Erreur", "Le hachage du mot de passe a échoué.", "OK");
+                    return;
+                }
 
-            if (userAdded)
-            {
-                await DisplayAlert("Succès", "Utilisateur enregistré avec succès.", "OK");
+                var dataservice = new DataService();
+                bool userAdded = dataservice.AddUser(nom, prenom, motDePasseHash, auth, roleLibelle);
+
+                if (userAdded)
+                {
+                    await DisplayAlert("Succès", "Utilisateur enregistré avec succès.", "OK");
+                }
+                else
+                {
+                    await DisplayAlert("Erreur", "L'enregistrement a échoué.", "OK");
+                }
             }
-            else
-            {
-                await DisplayAlert("Erreur", "L'enregistrement a échoué. diya", "OK");
-            }
-        }
 
         private async void OnSearchClicked(object sender, EventArgs e)
         {
@@ -143,7 +142,7 @@ namespace TimeTrack
                 string auth = AuthSearchEntry.Text;
                 string nom = await DisplayPromptAsync("Modification", "Nom", initialValue: user.Nom);
                 string prenom = await DisplayPromptAsync("Modification", "Prénom", initialValue: user.Prenom);
-                string RoleLibelle = await DisplayPromptAsync("Modification", "Role", initialValue: user.RoleId);
+                string roleLibelle = await DisplayPromptAsync("Modification", "Role", initialValue: user.RoleId);
                 string motDePasse = await DisplayPromptAsync("Modification", "Mot de passe");
 
 
@@ -151,9 +150,9 @@ namespace TimeTrack
                 // ... d'autres champs si nécessaire
 
                 // Ici, vous pouvez mettre à jour les valeurs si elles ont été modifiées
-                if (!string.IsNullOrWhiteSpace(nom) && !string.IsNullOrWhiteSpace(prenom) && !string.IsNullOrWhiteSpace(RoleLibelle))
+                if (!string.IsNullOrWhiteSpace(nom) && !string.IsNullOrWhiteSpace(prenom) && !string.IsNullOrWhiteSpace(roleLibelle))
                 {
-                    bool isUpdated = dataservice.UpdateUser(auth,nom, prenom, motDePasseHash, RoleLibelle);
+                    bool isUpdated = dataservice.UpdateUser(auth, nom, prenom, motDePasseHash, roleLibelle);
                     if (isUpdated)
                     {
                         await DisplayAlert("Succès", "Utilisateur mis à jour avec succès.", "OK");
@@ -174,7 +173,5 @@ namespace TimeTrack
                 await DisplayAlert("Erreur", "Aucun utilisateur trouvé avec cet Auth.", "OK");
             }
         }
-
-
     }
 }
